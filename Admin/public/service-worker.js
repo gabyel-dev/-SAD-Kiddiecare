@@ -13,6 +13,24 @@ self.addEventListener("install", (e) => {
   );
 });
 
-self.addEventListener("fetch", (e) => {
-  e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
+self.addEventListener("fetch", (event) => {
+  if (event.request.mode === "navigate") {
+    // SPA fallback for React/Vite
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match("/index.html"))
+    );
+    return;
+  }
+
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      return (
+        cached ||
+        fetch(event.request).catch(() => {
+          // optional: offline fallback
+          return caches.match("/");
+        })
+      );
+    })
+  );
 });
