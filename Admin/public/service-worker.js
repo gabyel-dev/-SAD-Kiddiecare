@@ -1,55 +1,78 @@
 const CACHE_NAME = "kiddiecare-cache-v1";
-
-// Cache only the essential app files, not Vite dev server files
 const FILES_TO_CACHE = [
   "/",
   "/index.html",
   "/manifest.json",
-  // Don't cache Vite-specific files in development
+  // Remove Vite-specific files from cache - they shouldn't be cached in dev
 ];
 
 self.addEventListener("install", (e) => {
+  console.log("Service Worker installing");
   e.waitUntil(
     caches
       .open(CACHE_NAME)
       .then((cache) => cache.addAll(FILES_TO_CACHE))
-      .then(() => self.skipWaiting())
+      .then(() => self.skipWaiting()) // Activate immediately
+      .catch(console.error)
+  );
+});
+
+self.addEventListener("activate", (e) => {
+  console.log("Service Worker activating");
+  e.waitUntil(
+    caches
+      .keys()
+      .then((keyList) =>
+        Promise.all(
+          keyList.map((key) => {
+            if (key !== CACHE_NAME) {
+              console.log("Removing old cache:", key);
+              return caches.delete(key);
+            }
+          })
+        )
+      )
+      .then(() => self.clients.claim()) // Take control immediately
   );
 });
 
 self.addEventListener("fetch", (event) => {
-  // For navigation requests, serve from cache if possible
-  if (event.request.mode === "navigate") {
-    event.respondWith(
-      caches
-        .match("/index.html")
-        .then((cachedResponse) => {
-          if (cachedResponse) {
-            return cachedResponse;
-          }
-          return fetch(event.request);
-        })
-        .catch(() => {
-          // Return basic offline page if everything fails
-          return new Response(
-            `
-            <html>
-              <body>
-                <h1>KiddieCare</h1>
-                <p>You're offline. Please check your internet connection.</p>
-                <button onclick="window.location.reload()">Retry</button>
-              </body>
-            </html>
-          `,
-            {
-              headers: { "Content-Type": "text/html" },
-            }
-          );
-        })
-    );
-    return;
+  // Don't cache Vite dev server requests
+  if (
+    event.request.url.includes("localhost:5173") &&
+    (event.request.url.includes("/@") || event.request.url.includes("vite"))
+  ) {
+    return; // Let browser handle these
   }
 
-  // For all other requests, try network first
-  event.respondWith(fetch(event.request));
+  // Only cache GET requests
+  if (event.request.method !== "GET") return;
+
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      // Return cached version if found
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      // Otherwise make network request
+      return fetch(event.request)
+        .then((response) => {
+          // Cache successful responses (optional)
+          if (response.status === 200) {
+            const responseToCache = response.clone();
+            caches
+              .open(CACHE_NAME)
+              .then((cache) => cache.put(event.request, responseToCache))
+              .catch(console.error);
+          }
+          return response;
+        })
+        .catch((error) => {
+          console.log("Network failed, no cache available:", error);
+          // You could return a generic offline page here if needed
+          throw error;
+        });
+    })
+  );
 });
