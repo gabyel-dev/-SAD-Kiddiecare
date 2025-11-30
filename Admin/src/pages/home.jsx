@@ -38,23 +38,18 @@ export default function HomeDashboard({ setActiveTab, activeTab }) {
   const absentCount = childrenCount - checkedInCount;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-6 rounded-2xl overflow-hidden relative  z-3">
+    <div className="h-fit mb-15 bg-gray-50 pb-6 rounded-2xl overflow-hidden relative  z-3">
       {open && <AddChild open={open} setOpen={setOpen} />}
 
       {/* Header */}
       <div className="px-4 pt-5 pb-3 flex justify-between items-start">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <div className="flex items-center text-gray-500 mt-1.5">
-            <FiCalendar className="w-3.5 h-3.5 mr-1.5 text-indigo-500" />
-            <span className="text-xs font-medium">
-              {new Date().toLocaleDateString("en-US", {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-              })}
-            </span>
-          </div>
+          <h1 className="text-2xl font-bold text-gray-900 font-sans uppercase">
+            Dashboard
+          </h1>
+          <p className="text-xs font-semibold text-indigo-800 opacity-50">
+            Here's a quick look at today's activity
+          </p>
         </div>
       </div>
 
@@ -86,12 +81,12 @@ export default function HomeDashboard({ setActiveTab, activeTab }) {
               <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">
                 Present
               </p>
-              <p className="text-xl font-bold text-gray-900 mt-1.5">
+              <div className="text-xl font-bold text-gray-900 mt-1.5 flex items-center gap-1 justify-center">
+                <div className="w-7 h-7 bg-blue-50 rounded-full flex items-center justify-center">
+                  <FiUserCheck className="w-3.5 h-3.5 text-green-600" />
+                </div>
                 {checkedInCount}
-              </p>
-            </div>
-            <div className="w-9 h-9 bg-green-50 rounded-full flex items-center justify-center">
-              <FiUserCheck className="w-4.5 h-4.5 text-green-600" />
+              </div>
             </div>
           </div>
         </div>

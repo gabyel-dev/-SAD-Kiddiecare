@@ -28,7 +28,7 @@ export default function Layout() {
   return (
     <main>
       <Header onLogout={handleLogout} />
-      <div className="px-4 py-2 pt-26">
+      <div className="px-4 py-2 pt-36">
         {activeTab === "home" && <HomeDashboard />}{" "}
         {activeTab === "attendance" && <DailyAttendance />}
       </div>

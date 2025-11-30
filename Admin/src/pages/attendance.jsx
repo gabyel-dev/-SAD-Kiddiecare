@@ -8,6 +8,7 @@ import {
   FiArrowLeft,
   FiUserCheck,
   FiUserX,
+  FiCalendar,
 } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import { useChildren } from "../hooks/useChildren";
@@ -144,21 +145,16 @@ export default function DailyAttendance() {
   };
 
   return (
-    <div className="h-fit bg-gray-50 rounded-2xl pt-5 px-4 pb-6 relative z-3">
+    <div className="h-fit bg-gray-50 rounded-2xl pt-5 px-4 pb-6 relative z-3 mb-15">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Attendance</h1>
-          <div className="flex items-center text-gray-500 mt-1">
-            <FiClock className="w-3.5 h-3.5 mr-1.5 text-indigo-500" />
-            <span className="text-xs font-medium">
-              {new Date().toLocaleDateString("en-US", {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-              })}
-            </span>
-          </div>
+          <h1 className="text-2xl font-bold text-gray-900 font-sans uppercase">
+            Attendance
+          </h1>
+          <p className="text-xs font-semibold text-indigo-800 opacity-50">
+            View and Manage Attendance
+          </p>
         </div>
       </div>
 
@@ -177,17 +173,17 @@ export default function DailyAttendance() {
       </div>
 
       {/* Attendance List */}
-      <div className="bg-white rounded-xl shadow-xs border border-gray-100 mb-4">
-        <div className="p-3 border-b border-gray-100">
-          <h2 className="text-sm font-bold text-gray-900 flex items-center">
-            <FiUsers className="w-4 h-4 mr-2 text-gray-500" />
-            Children List
-            <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">
-              {filteredChildren.length}
-            </span>
-          </h2>
-        </div>
+      <div className="p-3 b bg-indigo-500 border border-indigo-600  rounded-t-xl">
+        <h2 className="text-sm font-bold text-gray-100 flex items-center">
+          <FiUsers className="w-4 h-4 mr-2 text-gray-100" />
+          Children List
+          <span className="ml-2 text-xs bg-gray-100 rounded-full text-gray-600 px-1.5 py-0.5 ">
+            {filteredChildren.length}
+          </span>
+        </h2>
+      </div>
 
+      <div className="__attendance_list__ max-h-60 overflow-auto bg-white rounded-b-xl shadow-xs border border-gray-200 mb-4">
         <div className="divide-y divide-gray-100">
           {filteredChildren.map((child) => (
             <div key={child.id} className="p-3">
